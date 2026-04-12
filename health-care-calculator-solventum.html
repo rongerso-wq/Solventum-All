@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Solventum Health Care Calculator — model ROI for Filtek One Bulk Fill and Clinpro Clear Fluoride treatments in your dental clinic." />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'%3E%3Crect width='150' height='150' rx='28' fill='%2300262A'/%3E%3Cpath d='M70.89,34.04c0-9.29-6.69-15.2-16.17-15.2s-16.7,6.83-16.7,16.89,7.22,17.08,19.29,17.08h20.4c28.77,0,47.49,19.49,47.49,44.89s-19.29,44.89-45.66,44.89-45.66-18.57-45.66-44.17c0-9.29,3.18-19.1,7.99-26.37h10.97c-5.58,7.22-8.52,16.31-8.52,25.6,0,20.21,14.67,35.27,35.27,35.27s35.27-15.01,35.27-35.27-14.67-35.27-37.1-35.27h-20.21c-20.26,.05-29.73-12.03-29.73-26.66s12.08-26.37,26.9-26.37c16.31,0,26.37,10.97,26.37,23.77,0,1.54-.19,3.61-.67,5h-10.1c.34-1.11,.58-2.98,.58-4.09Z' fill='%2305DD4D'/%3E%3C/svg%3E" />
   <title>Solventum — Health Care Calculator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     /* ══════════════════════════════════════════════
@@ -826,7 +827,7 @@ function App() {
           SECTION 1 — BULK FILL EFFICIENCY
       ══════════════════════════════════════════════════════════════════════ */}
       <div className="card card-s1">
-        <div className="card-title card-title-teal">⏱ Technique Efficiency — Bulk Fill vs. Incremental Layering</div>
+        <div className="card-title card-title-teal">Technique Efficiency — Bulk Fill vs. Incremental Layering</div>
 
         <div className="grid-2">
 
@@ -922,7 +923,7 @@ function App() {
               <div className="bar-track"><div className="bar-fill bar-new-teal" style={{ width: `${wNew}%` }} /></div>
 
               <div className="time-bar-label">
-                <span>⚡ Time saved — {fmt(savedHours, 1)}h</span>
+                <span>Time saved — {fmt(savedHours, 1)}h</span>
               </div>
               <div className="bar-track"><div className="bar-fill bar-saved" style={{ width: `${wSave}%` }} /></div>
             </div>
@@ -941,7 +942,7 @@ function App() {
           SECTION 2 — FLUORIDE REVENUE (Clinpro Clear)
       ══════════════════════════════════════════════════════════════════════ */}
       <div className="card section-gap card-s2">
-        <div className="card-title card-title-midteal">🦷 New Revenue — Clinpro™ Clear Fluoride Treatment</div>
+        <div className="card-title card-title-midteal">New Revenue — Clinpro™ Clear Fluoride Treatment</div>
 
         <div className="grid-2">
           <div>
@@ -1034,7 +1035,7 @@ function App() {
             </div>
 
             <div className="calc-box">
-              <div className="calc-box-title">💡 How the calculation works</div>
+              <div className="calc-box-title">How the calculation works</div>
               <div className="calc-box-body">
                 {fmt(clinicPatients)} patients → {hypersensitivePct}% sensitive = <strong>{fmt(hypersensitivePatients)}</strong> → {acceptancePct}% accept = <strong>{fmt(acceptingPatients)} patients</strong><br/>
                 Revenue: {fmt(acceptingPatients)} × {fmtEur(treatmentPrice)} × {applications} = <strong>{fmtEur(fluorideRevenue)}</strong><br/>
@@ -1049,7 +1050,7 @@ function App() {
           SECTION 3 — COMBINED P&L IMPACT
       ══════════════════════════════════════════════════════════════════════ */}
       <div className="card section-gap">
-        <div className="card-title">📊 Combined Impact on Clinic P&amp;L</div>
+        <div className="card-title">Combined Impact on Clinic P&amp;L</div>
 
         <div className="grid-2">
 
@@ -1090,13 +1091,18 @@ function App() {
                   </div>
                 </div>
                 <div className="growth-track">
-                  <div className="growth-fill-base-green" style={{ width: `${clinicMarginPct}%` }} />
-                  <div className="growth-fill-improvement" style={{ left: `${clinicMarginPct}%`, width: `${Math.max(0, newProfitPct - clinicMarginPct)}%`, background: newProfitPct >= clinicMarginPct ? '#05DD4D' : '#FF5B5B' }} />
+                  {newProfitPct >= clinicMarginPct ? (<>
+                    <div className="growth-fill-base-green" style={{ width: `${clinicMarginPct}%` }} />
+                    <div className="growth-fill-improvement" style={{ left: `${clinicMarginPct}%`, width: `${newProfitPct - clinicMarginPct}%`, background: '#05DD4D' }} />
+                  </>) : (<>
+                    <div className="growth-fill-base-green" style={{ width: `${newProfitPct}%`, background: '#FF5B5B' }} />
+                    <div className="growth-fill-improvement" style={{ left: `${newProfitPct}%`, width: `${clinicMarginPct - newProfitPct}%`, background: 'rgba(255,91,91,0.18)', border: '1px dashed rgba(255,91,91,0.45)', boxSizing: 'border-box' }} />
+                  </>)}
                 </div>
                 <div className="growth-mini-legend">
                   <div className="growth-mini-item">
                     <div className="growth-mini-dot" style={{ background: 'rgba(5,221,77,0.22)' }} />
-                    <span className="growth-mini-text">Base 30%</span>
+                    <span className="growth-mini-text">Base {fmt(clinicMarginPct, 1)}%</span>
                   </div>
                   <div className="growth-mini-item">
                     <div className="growth-mini-dot" style={{ background: newProfitPct >= clinicMarginPct ? '#05DD4D' : '#FF5B5B' }} />
@@ -1187,7 +1193,7 @@ function App() {
           Talk to a Solventum representative to plan your product transition and get clinical support.
         </div>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a href="mailto:dental@solventum.com" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 10, background: '#05DD4D', color: '#012A24', fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', fontWeight: 700, textDecoration: 'none', transition: 'opacity 0.15s' }} onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+          <a href="mailto:dental@solventum.com" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 10, background: '#05DD4D', color: '#012A24', fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', fontWeight: 700, textDecoration: 'none', transition: 'opacity 0.15s' }} onMouseOver={e => e.currentTarget.style.opacity='0.88'} onMouseOut={e => e.currentTarget.style.opacity='1'}>
             Contact a Representative
           </a>
           <button onClick={() => window.print()} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 10, background: 'transparent', border: '1px solid rgba(5,221,77,0.4)', color: '#05DD4D', fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', fontWeight: 700, cursor: 'pointer', transition: 'background 0.15s' }} onMouseOver={e => e.currentTarget.style.background='rgba(5,221,77,0.1)'} onMouseOut={e => e.currentTarget.style.background='transparent'}>
