@@ -723,7 +723,7 @@ function App() {
   const newHours       = useMemo(() => (newMinutes * posteriorCases) / 60, [newMinutes, posteriorCases]);
   const savedHours     = useMemo(() => oldHours - newHours, [oldHours, newHours]);
   const savedEuros     = useMemo(() => savedHours * chairCost,  [savedHours, chairCost]);
-  const timeSavedPct   = useMemo(() => (savedHours / oldHours) * 100, [savedHours, oldHours]);
+  const timeSavedPct   = useMemo(() => oldHours > 0 ? (savedHours / oldHours) * 100 : 0, [savedHours, oldHours]);
 
   // ── Fluoride Calculations ────────────────────────────────────────────────
   const hypersensitivePatients = useMemo(() => Math.round(clinicPatients * hypersensitivePct / 100), [clinicPatients, hypersensitivePct]);
@@ -742,7 +742,7 @@ function App() {
   const newProfitPct     = useMemo(() => (newProfit / newRevenue) * 100, [newProfit, newRevenue]);
 
   // bar widths
-  const maxH  = oldHours;
+  const maxH  = oldHours || 1;
   const wOld  = 100;
   const wNew  = (newHours  / maxH) * 100;
   const wSave = (savedHours / maxH) * 100;
