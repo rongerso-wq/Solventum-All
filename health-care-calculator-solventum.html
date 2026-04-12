@@ -597,7 +597,7 @@
   <div class="navbar-logo">
     <svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
       <rect width="150" height="150" rx="28" fill="#00262A"/>
-      <path d="M70.89,34.04c0-9.29-6.69-15.2-16.17-15.2s-16.7,6.83-16.7,16.89,7.22,17.08,19.29,17.08h20.4c28.77,0,47.49,19.49,47.49,44.89s-19.29,44.89-45.66,44.89-45.66-18.57-45.66-44.17c0-9.29,3.18-19.1,7.99-26.37h10.97c-5.58,7.22-8.52,16.31-8.52,25.6,0,20.21,14.67,35.27,35.27,35.27s35.27-15.01,35.27-35.27-14.67-35.27-37.1-35.27h-20.21c-20.26,.05-29.73-12.03-29.73-26.66s12.08-26.37,26.9-26.37c16.31,0,26.37,10.97,26.37,23.77,0,1.54-.19,3.61-.67,5h-10.1c.34-1.11,.58-2.98,.58-4.09Z" fill="#00E676"/>
+      <path d="M70.89,34.04c0-9.29-6.69-15.2-16.17-15.2s-16.7,6.83-16.7,16.89,7.22,17.08,19.29,17.08h20.4c28.77,0,47.49,19.49,47.49,44.89s-19.29,44.89-45.66,44.89-45.66-18.57-45.66-44.17c0-9.29,3.18-19.1,7.99-26.37h10.97c-5.58,7.22-8.52,16.31-8.52,25.6,0,20.21,14.67,35.27,35.27,35.27s35.27-15.01,35.27-35.27-14.67-35.27-37.1-35.27h-20.21c-20.26,.05-29.73-12.03-29.73-26.66s12.08-26.37,26.9-26.37c16.31,0,26.37,10.97,26.37,23.77,0,1.54-.19,3.61-.67,5h-10.1c.34-1.11,.58-2.98,.58-4.09Z" fill="#05DD4D"/>
     </svg>
   </div>
   <span class="navbar-brand">Solventum</span>
@@ -646,23 +646,25 @@ function App() {
     return () => document.removeEventListener('fullscreenchange', handler);
   }, []);
 
-  // Sliders
+  // ── Clinic Profile ───────────────────────────────────────────────────────
+  const [clinicRevenue,    setClinicRevenue]    = useState(250000);
+  const [clinicPatients,   setClinicPatients]   = useState(1575);
+  const [clinicMarginPct,  setClinicMarginPct]  = useState(30);
+
+  // ── Bulk Fill sliders ─────────────────────────────────────────────────────
   const [totalFillings, setTotalFillings] = useState(1215);
   const [posteriorPct,  setPosteriorPct]  = useState(75);
   const [chairCost,     setChairCost]     = useState(60);
   const [oldMinutes,    setOldMinutes]    = useState(28);
   const [newMinutes,    setNewMinutes]    = useState(12);
 
-  // Fluoride treatment sliders
-  const [hypersensitivePct, setHypersensitivePct] = useState(51);
-  const [acceptancePct,     setAcceptancePct]     = useState(10);
-  const [treatmentPrice,    setTreatmentPrice]    = useState(35);
-  const [materialCost,      setMaterialCost]      = useState(2.5);
-  const [applications,      setApplications]      = useState(2);
-
-  // Base clinic
-  const baseRevenue  = 250000;
-  const basePatients = 1575;
+  // ── Fluoride sliders ──────────────────────────────────────────────────────
+  const [hypersensitivePct,  setHypersensitivePct]  = useState(51);
+  const [acceptancePct,      setAcceptancePct]      = useState(10);
+  const [treatmentPrice,     setTreatmentPrice]     = useState(35);
+  const [materialCost,       setMaterialCost]       = useState(2.5);
+  const [applications,       setApplications]       = useState(2);
+  const [fluorideApptMins,   setFluorideApptMins]   = useState(5);
 
   // ── Bulk Fill Calculations ────────────────────────────────────────────────
   const posteriorCases = useMemo(() => Math.round(totalFillings * posteriorPct / 100), [totalFillings, posteriorPct]);
@@ -673,20 +675,20 @@ function App() {
   const timeSavedPct   = useMemo(() => (savedHours / oldHours) * 100, [savedHours, oldHours]);
 
   // ── Fluoride Calculations ────────────────────────────────────────────────
-  const hypersensitivePatients = useMemo(() => Math.round(basePatients * hypersensitivePct / 100), [hypersensitivePct]);
+  const hypersensitivePatients = useMemo(() => Math.round(clinicPatients * hypersensitivePct / 100), [clinicPatients, hypersensitivePct]);
   const acceptingPatients      = useMemo(() => Math.round(hypersensitivePatients * acceptancePct / 100), [hypersensitivePatients, acceptancePct]);
   const fluorideRevenue        = useMemo(() => acceptingPatients * treatmentPrice * applications, [acceptingPatients, treatmentPrice, applications]);
   const fluorideMaterialCost   = useMemo(() => materialCost * applications * acceptingPatients, [materialCost, applications, acceptingPatients]);
-  const fluorideTimeCost       = useMemo(() => (5 / 60) * applications * acceptingPatients * chairCost, [applications, acceptingPatients, chairCost]);
+  const fluorideTimeCost       = useMemo(() => (fluorideApptMins / 60) * applications * acceptingPatients * chairCost, [fluorideApptMins, applications, acceptingPatients, chairCost]);
   const fluorideProfit         = useMemo(() => fluorideRevenue - fluorideMaterialCost - fluorideTimeCost, [fluorideRevenue, fluorideMaterialCost, fluorideTimeCost]);
 
   // ── Clinic P&L ───────────────────────────────────────────────────────────
-  const originalExpenses = baseRevenue * 0.70;
-  const originalProfit   = baseRevenue * 0.30;
-  const newRevenue       = baseRevenue + fluorideRevenue;
-  const newExpenses      = originalExpenses - savedEuros + fluorideMaterialCost + fluorideTimeCost;
-  const newProfit        = newRevenue - newExpenses;
-  const newProfitPct     = (newProfit / newRevenue) * 100;
+  const originalExpenses = useMemo(() => clinicRevenue * (1 - clinicMarginPct / 100), [clinicRevenue, clinicMarginPct]);
+  const originalProfit   = useMemo(() => clinicRevenue * (clinicMarginPct / 100), [clinicRevenue, clinicMarginPct]);
+  const newRevenue       = useMemo(() => clinicRevenue + fluorideRevenue, [clinicRevenue, fluorideRevenue]);
+  const newExpenses      = useMemo(() => originalExpenses - savedEuros + fluorideMaterialCost + fluorideTimeCost, [originalExpenses, savedEuros, fluorideMaterialCost, fluorideTimeCost]);
+  const newProfit        = useMemo(() => newRevenue - newExpenses, [newRevenue, newExpenses]);
+  const newProfitPct     = useMemo(() => (newProfit / newRevenue) * 100, [newProfit, newRevenue]);
 
   // bar widths
   const maxH  = oldHours;
@@ -697,12 +699,50 @@ function App() {
   return (
     <div className="page">
 
+      {/* ── Clinic Profile ── */}
+      <div className="card" style={{ marginBottom: 0, border: '1px solid rgba(5,221,77,0.3)', background: 'rgba(5,221,77,0.04)' }}>
+        <div className="card-title" style={{ color: '#05DD4D', marginBottom: 18 }}>Your Clinic Profile</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0 32px' }}>
+
+          <div className="slider-row" style={{ marginBottom: 16 }}>
+            <div className="slider-header">
+              <span className="slider-label">Annual Revenue</span>
+              <span className="slider-value animated">{fmtEur(clinicRevenue)}</span>
+            </div>
+            <input type="range" min="50000" max="1000000" step="25000"
+              value={clinicRevenue} onChange={e => setClinicRevenue(+e.target.value)} />
+            <div className="slider-hints"><span>€50k</span><span>€1M</span></div>
+          </div>
+
+          <div className="slider-row" style={{ marginBottom: 16 }}>
+            <div className="slider-header">
+              <span className="slider-label">Patient visits / year</span>
+              <span className="slider-value animated">{fmt(clinicPatients)}</span>
+            </div>
+            <input type="range" min="100" max="5000" step="25"
+              value={clinicPatients} onChange={e => setClinicPatients(+e.target.value)} />
+            <div className="slider-hints"><span>100</span><span>5,000</span></div>
+          </div>
+
+          <div className="slider-row" style={{ marginBottom: 0 }}>
+            <div className="slider-header">
+              <span className="slider-label">Current profit margin</span>
+              <span className="slider-value animated">{clinicMarginPct}%</span>
+            </div>
+            <input type="range" min="5" max="55" step="1"
+              value={clinicMarginPct} onChange={e => setClinicMarginPct(+e.target.value)} />
+            <div className="slider-hints"><span>5%</span><span>55%</span></div>
+          </div>
+
+        </div>
+      </div>
+
       {/* ── Header ── */}
-      <div className="header">
+      <div className="header" style={{ marginTop: 28 }}>
         <div className="logo-mark">
           <svg viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
             <rect width="150" height="150" rx="28" fill="#00262A"/>
-            <path d="M70.89,34.04c0-9.29-6.69-15.2-16.17-15.2s-16.7,6.83-16.7,16.89,7.22,17.08,19.29,17.08h20.4c28.77,0,47.49,19.49,47.49,44.89s-19.29,44.89-45.66,44.89-45.66-18.57-45.66-44.17c0-9.29,3.18-19.1,7.99-26.37h10.97c-5.58,7.22-8.52,16.31-8.52,25.6,0,20.21,14.67,35.27,35.27,35.27s35.27-15.01,35.27-35.27-14.67-35.27-37.1-35.27h-20.21c-20.26,.05-29.73-12.03-29.73-26.66s12.08-26.37,26.9-26.37c16.31,0,26.37,10.97,26.37,23.77,0,1.54-.19,3.61-.67,5h-10.1c.34-1.11,.58-2.98,.58-4.09Z" fill="#00E676"/>
+            <path d="M70.89,34.04c0-9.29-6.69-15.2-16.17-15.2s-16.7,6.83-16.7,16.89,7.22,17.08,19.29,17.08h20.4c28.77,0,47.49,19.49,47.49,44.89s-19.29,44.89-45.66,44.89-45.66-18.57-45.66-44.17c0-9.29,3.18-19.1,7.99-26.37h10.97c-5.58,7.22-8.52,16.31-8.52,25.6,0,20.21,14.67,35.27,35.27,35.27s35.27-15.01,35.27-35.27-14.67-35.27-37.1-35.27h-20.21c-20.26,.05-29.73-12.03-29.73-26.66s12.08-26.37,26.9-26.37c16.31,0,26.37,10.97,26.37,23.77,0,1.54-.19,3.61-.67,5h-10.1c.34-1.11,.58-2.98,.58-4.09Z" fill="#05DD4D"/>
           </svg>
         </div>
         <div className="header-text">
@@ -898,6 +938,16 @@ function App() {
                 value={materialCost} onChange={e => setMaterialCost(+e.target.value)} />
               <div className="slider-hints"><span>€1</span><span>€15</span></div>
             </div>
+
+            <div className="slider-row">
+              <div className="slider-header">
+                <span className="slider-label">Appointment duration</span>
+                <span className="slider-value animated">{fluorideApptMins} min</span>
+              </div>
+              <input type="range" min="2" max="20" step="1"
+                value={fluorideApptMins} onChange={e => setFluorideApptMins(+e.target.value)} />
+              <div className="slider-hints"><span>2 min</span><span>20 min</span></div>
+            </div>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -920,20 +970,19 @@ function App() {
                 <div className="kpi-label">Treatment cost</div>
                 <div className="kpi-sub">Materials + chair time</div>
               </div>
-              <div className="kpi-card midteal">
-                <div className="kpi-icon">📈</div>
-                <div className="kpi-value animated">{fmtEur(Math.max(0, fluorideProfit))}</div>
-                <div className="kpi-label">Net profit</div>
-                <div className="kpi-sub">+ Patient loyalty</div>
+              <div className="kpi-card" style={fluorideProfit >= 0 ? {} : { background:'rgba(255,91,91,0.1)', border:'1px solid rgba(255,91,91,0.35)' }}>
+                <div className="kpi-value animated" style={{ color: fluorideProfit >= 0 ? '#1CCF93' : '#FF5B5B' }}>{fmtEur(fluorideProfit)}</div>
+                <div className="kpi-label">{fluorideProfit >= 0 ? 'Net profit' : 'Net loss — adjust inputs'}</div>
+                <div className="kpi-sub">{fluorideProfit >= 0 ? '+ Patient loyalty' : 'Cost exceeds revenue at these settings'}</div>
               </div>
             </div>
 
             <div className="calc-box">
               <div className="calc-box-title">💡 How the calculation works</div>
               <div className="calc-box-body">
-                {fmt(basePatients)} patients → {hypersensitivePct}% sensitive = <strong>{fmt(hypersensitivePatients)}</strong> → {acceptancePct}% accept = <strong>{fmt(acceptingPatients)} patients</strong><br/>
+                {fmt(clinicPatients)} patients → {hypersensitivePct}% sensitive = <strong>{fmt(hypersensitivePatients)}</strong> → {acceptancePct}% accept = <strong>{fmt(acceptingPatients)} patients</strong><br/>
                 Revenue: {fmt(acceptingPatients)} × {fmtEur(treatmentPrice)} × {applications} = <strong>{fmtEur(fluorideRevenue)}</strong><br/>
-                Cost: ({fmtEur(materialCost)} mat. + 5min chair) × {applications} × {fmt(acceptingPatients)} = <strong>{fmtEur(fluorideMaterialCost + fluorideTimeCost)}</strong>
+                Cost: ({fmtEur(materialCost)} mat. + {fluorideApptMins}min chair) × {applications} × {fmt(acceptingPatients)} = <strong>{fmtEur(fluorideMaterialCost + fluorideTimeCost)}</strong>
               </div>
             </div>
           </div>
@@ -960,12 +1009,12 @@ function App() {
               <div className="growth-row">
                 <div className="growth-row-header">
                   <span className="growth-row-label baseline">Baseline</span>
-                  <span className="growth-pct-baseline">30.0%</span>
+                  <span className="growth-pct-baseline">{fmt(clinicMarginPct, 1)}%</span>
                 </div>
                 <div className="growth-track">
-                  <div className="growth-fill-base" style={{ width: '30%' }} />
+                  <div className="growth-fill-base" style={{ width: `${clinicMarginPct}%` }} />
                 </div>
-                <div className="growth-caption">{fmtEur(baseRevenue)} revenue · {fmtEur(originalProfit)} profit</div>
+                <div className="growth-caption">{fmtEur(clinicRevenue)} revenue · {fmtEur(originalProfit)} profit</div>
               </div>
 
               {/* After improvements bar */}
@@ -973,13 +1022,15 @@ function App() {
                 <div className="growth-row-header">
                   <span className="growth-row-label improved">After Improvements</span>
                   <div className="growth-row-right">
-                    <span className="growth-delta">▲ +{fmt(newProfitPct - 30, 1)}pp</span>
-                    <span className="growth-pct-new">{fmt(Math.max(0, newProfitPct), 1)}%</span>
+                    <span className="growth-delta" style={newProfitPct >= clinicMarginPct ? {} : {color:'#FF5B5B',background:'rgba(255,91,91,0.1)',borderColor:'rgba(255,91,91,0.3)'}}>
+                      {newProfitPct >= clinicMarginPct ? '▲' : '▼'} {fmt(Math.abs(newProfitPct - clinicMarginPct), 1)}pp
+                    </span>
+                    <span className="growth-pct-new" style={newProfitPct < clinicMarginPct ? {color:'#FF5B5B'} : {}}>{fmt(newProfitPct, 1)}%</span>
                   </div>
                 </div>
                 <div className="growth-track">
-                  <div className="growth-fill-base-green" style={{ width: '30%' }} />
-                  <div className="growth-fill-improvement" style={{ left: '30%', width: `${Math.max(0, newProfitPct - 30)}%` }} />
+                  <div className="growth-fill-base-green" style={{ width: `${clinicMarginPct}%` }} />
+                  <div className="growth-fill-improvement" style={{ left: `${clinicMarginPct}%`, width: `${Math.max(0, newProfitPct - clinicMarginPct)}%`, background: newProfitPct >= clinicMarginPct ? '#05DD4D' : '#FF5B5B' }} />
                 </div>
                 <div className="growth-mini-legend">
                   <div className="growth-mini-item">
@@ -987,8 +1038,8 @@ function App() {
                     <span className="growth-mini-text">Base 30%</span>
                   </div>
                   <div className="growth-mini-item">
-                    <div className="growth-mini-dot" style={{ background: '#05DD4D' }} />
-                    <span className="growth-mini-text">Improvement +{fmt(newProfitPct - 30, 1)}pp</span>
+                    <div className="growth-mini-dot" style={{ background: newProfitPct >= clinicMarginPct ? '#05DD4D' : '#FF5B5B' }} />
+                    <span className="growth-mini-text">{newProfitPct >= clinicMarginPct ? 'Improvement' : 'Decrease'} {fmt(Math.abs(newProfitPct - clinicMarginPct), 1)}pp</span>
                   </div>
                 </div>
                 <div className="growth-caption">{fmtEur(newRevenue)} revenue · {fmtEur(newProfit)} profit</div>
@@ -1004,7 +1055,7 @@ function App() {
               <div className="rev-row">
                 <span className="rev-name">Base Revenue</span>
                 <span className="rev-tag tag-revenue">Revenue</span>
-                <span className="rev-amount">{fmtEur(baseRevenue)}</span>
+                <span className="rev-amount">{fmtEur(clinicRevenue)}</span>
               </div>
               <div className="rev-row">
                 <span className="rev-name">+ Fluoride Treatment Revenue</span>
@@ -1017,14 +1068,9 @@ function App() {
                 <span className="rev-amount" style={{ color: '#fff', fontWeight: 800 }}>{fmtEur(newRevenue)}</span>
               </div>
               <div className="rev-row">
-                <span className="rev-name">Base Fixed Expenses</span>
-                <span className="rev-tag tag-expense">Fixed</span>
-                <span className="rev-amount">{fmtEur(120000)}</span>
-              </div>
-              <div className="rev-row">
-                <span className="rev-name">Variable Expenses</span>
-                <span className="rev-tag tag-expense">Variable</span>
-                <span className="rev-amount">{fmtEur(55000)}</span>
+                <span className="rev-name">Base Operating Expenses</span>
+                <span className="rev-tag tag-expense">At {clinicMarginPct}% margin</span>
+                <span className="rev-amount">{fmtEur(originalExpenses)}</span>
               </div>
               <div className="rev-row">
                 <span className="rev-name">− Bulk Fill Savings</span>
@@ -1063,10 +1109,29 @@ function App() {
             <div className="kpi-icon">📈</div>
             <div className="kpi-value animated">{fmt(newProfitPct, 1)}%</div>
             <div className="kpi-label">New Profit Margin</div>
-            <div className="kpi-sub" style={{ color: '#05DD4D', fontWeight: 600 }}>
-              was 30.0% → now {fmt(newProfitPct, 1)}%
+            <div className="kpi-sub" style={{ color: newProfitPct >= clinicMarginPct ? '#05DD4D' : '#FF5B5B', fontWeight: 600 }}>
+              was {fmt(clinicMarginPct, 1)}% → now {fmt(newProfitPct, 1)}%
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* ── Closing CTA ── */}
+      <div className="card section-gap" style={{ border: '1px solid rgba(5,221,77,0.3)', background: 'rgba(5,221,77,0.05)', textAlign: 'center', padding: '32px 28px' }}>
+        <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#05DD4D', marginBottom: 10 }}>Ready to implement?</div>
+        <div style={{ fontSize: 'clamp(1.1rem, 3vw, 1.4rem)', fontWeight: 800, color: '#ffffff', marginBottom: 8, lineHeight: 1.2 }}>
+          Your clinic could gain {fmtEur(savedEuros + Math.max(0, fluorideProfit))} per year
+        </div>
+        <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)', marginBottom: 28, maxWidth: 480, margin: '0 auto 28px' }}>
+          Talk to a Solventum representative to plan your product transition and get clinical support.
+        </div>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <a href="mailto:dental@solventum.com" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 10, background: '#05DD4D', color: '#012A24', fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', fontWeight: 700, textDecoration: 'none', transition: 'opacity 0.15s' }} onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">
+            Contact a Representative
+          </a>
+          <button onClick={() => window.print()} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: 10, background: 'transparent', border: '1px solid rgba(5,221,77,0.4)', color: '#05DD4D', fontFamily: "'Inter', sans-serif", fontSize: '0.88rem', fontWeight: 700, cursor: 'pointer', transition: 'background 0.15s' }} onMouseOver={e => e.currentTarget.style.background='rgba(5,221,77,0.1)'} onMouseOut={e => e.currentTarget.style.background='transparent'}>
+            Save as PDF
+          </button>
         </div>
       </div>
 
@@ -1074,7 +1139,7 @@ function App() {
       <p className="footnote">
         (1) Omnivision Study Spain 2017 – Key-Stone &nbsp;·&nbsp;
         (2) Internal Solventum Estimation: Average chair time cost in Spain: €60/hour &nbsp;·&nbsp;
-        All figures are illustrative estimates for planning purposes.
+        All figures are illustrative estimates for planning purposes only.
       </p>
     </div>
   );
