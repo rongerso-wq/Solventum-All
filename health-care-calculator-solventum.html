@@ -629,6 +629,46 @@ const fmt = (n, decimals = 0) =>
   n.toLocaleString('de-DE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 const fmtEur = (n) => `€\u202f${fmt(Math.round(n))}`;
 
+// ── SVG Icon helpers ──────────────────────────────────────────────────────────
+const IcoClock    = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+const IcoMoney    = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>;
+const IcoUsers    = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+const IcoFlask    = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 3h6m-5 0v6l-4.5 9a2 2 0 0 0 1.8 2.9h9.4a2 2 0 0 0 1.8-2.9L14 9V3"/><line x1="6" y1="14" x2="18" y2="14"/></svg>;
+const IcoTrend    = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>;
+
+// ── Ring donut chart ─────────────────────────────────────────────────────────
+function Ring({ pct, color, size = 130, stroke = 14, label, sub }) {
+  const r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const clamped = Math.max(0, Math.min(100, pct));
+  const offset = circ * (1 - clamped / 100);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+      <div style={{ position: 'relative', width: size, height: size }}>
+        <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={stroke} />
+          <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
+            strokeDasharray={circ} strokeDashoffset={offset}
+            strokeLinecap="round"
+            style={{ transition: 'stroke-dashoffset 0.6s cubic-bezier(0.4,0,0.2,1)' }} />
+        </svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: '1.35rem', fontWeight: 800, color, lineHeight: 1 }}>{fmt(clamped, 1)}%</span>
+        </div>
+      </div>
+      {label && <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', textAlign: 'center' }}>{label}</div>}
+      {sub   && <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginTop: -4 }}>{sub}</div>}
+    </div>
+  );
+}
+
+// ── Default slider values ─────────────────────────────────────────────────────
+const DEFAULTS = {
+  clinicRevenue: 250000, clinicPatients: 1575, clinicMarginPct: 30,
+  totalFillings: 1215, posteriorPct: 75, chairCost: 60, oldMinutes: 28, newMinutes: 12,
+  hypersensitivePct: 51, acceptancePct: 10, treatmentPrice: 35, materialCost: 2.5, applications: 2, fluorideApptMins: 5,
+};
+
 // ── Main Component ────────────────────────────────────────────────────────────
 function App() {
   // Fullscreen
@@ -647,24 +687,33 @@ function App() {
   }, []);
 
   // ── Clinic Profile ───────────────────────────────────────────────────────
-  const [clinicRevenue,    setClinicRevenue]    = useState(250000);
-  const [clinicPatients,   setClinicPatients]   = useState(1575);
-  const [clinicMarginPct,  setClinicMarginPct]  = useState(30);
+  const [clinicRevenue,    setClinicRevenue]    = useState(DEFAULTS.clinicRevenue);
+  const [clinicPatients,   setClinicPatients]   = useState(DEFAULTS.clinicPatients);
+  const [clinicMarginPct,  setClinicMarginPct]  = useState(DEFAULTS.clinicMarginPct);
 
   // ── Bulk Fill sliders ─────────────────────────────────────────────────────
-  const [totalFillings, setTotalFillings] = useState(1215);
-  const [posteriorPct,  setPosteriorPct]  = useState(75);
-  const [chairCost,     setChairCost]     = useState(60);
-  const [oldMinutes,    setOldMinutes]    = useState(28);
-  const [newMinutes,    setNewMinutes]    = useState(12);
+  const [totalFillings, setTotalFillings] = useState(DEFAULTS.totalFillings);
+  const [posteriorPct,  setPosteriorPct]  = useState(DEFAULTS.posteriorPct);
+  const [chairCost,     setChairCost]     = useState(DEFAULTS.chairCost);
+  const [oldMinutes,    setOldMinutes]    = useState(DEFAULTS.oldMinutes);
+  const [newMinutes,    setNewMinutes]    = useState(DEFAULTS.newMinutes);
 
   // ── Fluoride sliders ──────────────────────────────────────────────────────
-  const [hypersensitivePct,  setHypersensitivePct]  = useState(51);
-  const [acceptancePct,      setAcceptancePct]      = useState(10);
-  const [treatmentPrice,     setTreatmentPrice]     = useState(35);
-  const [materialCost,       setMaterialCost]       = useState(2.5);
-  const [applications,       setApplications]       = useState(2);
-  const [fluorideApptMins,   setFluorideApptMins]   = useState(5);
+  const [hypersensitivePct,  setHypersensitivePct]  = useState(DEFAULTS.hypersensitivePct);
+  const [acceptancePct,      setAcceptancePct]      = useState(DEFAULTS.acceptancePct);
+  const [treatmentPrice,     setTreatmentPrice]     = useState(DEFAULTS.treatmentPrice);
+  const [materialCost,       setMaterialCost]       = useState(DEFAULTS.materialCost);
+  const [applications,       setApplications]       = useState(DEFAULTS.applications);
+  const [fluorideApptMins,   setFluorideApptMins]   = useState(DEFAULTS.fluorideApptMins);
+
+  const resetAll = () => {
+    setClinicRevenue(DEFAULTS.clinicRevenue); setClinicPatients(DEFAULTS.clinicPatients); setClinicMarginPct(DEFAULTS.clinicMarginPct);
+    setTotalFillings(DEFAULTS.totalFillings); setPosteriorPct(DEFAULTS.posteriorPct); setChairCost(DEFAULTS.chairCost);
+    setOldMinutes(DEFAULTS.oldMinutes); setNewMinutes(DEFAULTS.newMinutes);
+    setHypersensitivePct(DEFAULTS.hypersensitivePct); setAcceptancePct(DEFAULTS.acceptancePct);
+    setTreatmentPrice(DEFAULTS.treatmentPrice); setMaterialCost(DEFAULTS.materialCost);
+    setApplications(DEFAULTS.applications); setFluorideApptMins(DEFAULTS.fluorideApptMins);
+  };
 
   // ── Bulk Fill Calculations ────────────────────────────────────────────────
   const posteriorCases = useMemo(() => Math.round(totalFillings * posteriorPct / 100), [totalFillings, posteriorPct]);
@@ -749,7 +798,13 @@ function App() {
           <h1>Clinic Profitability Calculator</h1>
           <p>Filtek™ One Bulk Fill Restorative &amp; Clinpro™ Clear Fluoride Treatment — Impact Analysis</p>
         </div>
-        <div className="header-right">
+        <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button onClick={resetAll} className="btn-print" title="Reset all sliders to defaults" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+            </svg>
+            Reset
+          </button>
           <button className="btn-fullscreen" onClick={toggleFullscreen} title={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}>
             {isFullscreen ? (
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -872,7 +927,7 @@ function App() {
             </div>
 
             <div className="kpi-card teal" style={{ marginTop: 4 }}>
-              <div className="kpi-icon">💰</div>
+              <div className="kpi-icon" style={{ color: '#19A591' }}><IcoMoney /></div>
               <div className="kpi-value animated">{fmtEur(savedEuros)}</div>
               <div className="kpi-label">Annual savings from Bulk Fill</div>
               <div className="kpi-sub">{fmt(savedHours, 1)} hours reclaimed · {fmt(posteriorCases)} posterior cases</div>
@@ -953,19 +1008,19 @@ function App() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div className="kpi-card neutral">
-                <div className="kpi-icon">📋</div>
+                <div className="kpi-icon" style={{ color: 'rgba(255,255,255,0.5)' }}><IcoUsers /></div>
                 <div className="kpi-value animated">{fmt(acceptingPatients)}</div>
                 <div className="kpi-label">Patients treated</div>
                 <div className="kpi-sub">{acceptancePct}% of {fmt(hypersensitivePatients)} sensitive</div>
               </div>
               <div className="kpi-card neutral">
-                <div className="kpi-icon">💳</div>
+                <div className="kpi-icon" style={{ color: 'rgba(255,255,255,0.5)' }}><IcoMoney /></div>
                 <div className="kpi-value animated">{fmtEur(fluorideRevenue)}</div>
                 <div className="kpi-label">Gross revenue</div>
                 <div className="kpi-sub">{applications}× {fmtEur(treatmentPrice)} / patient</div>
               </div>
               <div className="kpi-card neutral">
-                <div className="kpi-icon">🧪</div>
+                <div className="kpi-icon" style={{ color: 'rgba(255,255,255,0.5)' }}><IcoFlask /></div>
                 <div className="kpi-value animated">{fmtEur(fluorideMaterialCost + fluorideTimeCost)}</div>
                 <div className="kpi-label">Treatment cost</div>
                 <div className="kpi-sub">Materials + chair time</div>
@@ -997,8 +1052,13 @@ function App() {
 
         <div className="grid-2">
 
-          {/* Left: Margin Growth Bars */}
+          {/* Left: Donuts + Growth Bars */}
           <div>
+            {/* Donut pair */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 32, marginBottom: 24 }}>
+              <Ring pct={clinicMarginPct} color="rgba(255,255,255,0.25)" size={120} stroke={13} label="Baseline" sub={fmtEur(originalProfit)} />
+              <Ring pct={newProfitPct}    color={newProfitPct >= clinicMarginPct ? '#05DD4D' : '#FF5B5B'} size={120} stroke={13} label="After Improvements" sub={fmtEur(newProfit)} />
+            </div>
             <div style={{ fontWeight: 600, fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)', marginBottom: 20 }}>
               Profit Margin — Baseline vs. After Improvements
             </div>
@@ -1094,19 +1154,19 @@ function App() {
         {/* Bottom KPIs */}
         <div className="grid-3 section-gap">
           <div className="kpi-card amber">
-            <div className="kpi-icon">⏰</div>
+            <div className="kpi-icon" style={{ color: '#FFB800' }}><IcoClock /></div>
             <div className="kpi-value animated">{fmt(savedHours, 1)}h</div>
             <div className="kpi-label">Hours Saved / Year</div>
             <div className="kpi-sub">With Bulk Fill technique</div>
           </div>
           <div className="kpi-card highlight">
-            <div className="kpi-icon">💰</div>
+            <div className="kpi-icon" style={{ color: '#05DD4D' }}><IcoMoney /></div>
             <div className="kpi-value animated">{fmtEur(savedEuros + Math.max(0, fluorideProfit))}</div>
             <div className="kpi-label">Total Additional Profit</div>
             <div className="kpi-sub">Bulk Fill + Fluoride combined</div>
           </div>
           <div className="kpi-card neutral">
-            <div className="kpi-icon">📈</div>
+            <div className="kpi-icon" style={{ color: 'rgba(255,255,255,0.5)' }}><IcoTrend /></div>
             <div className="kpi-value animated">{fmt(newProfitPct, 1)}%</div>
             <div className="kpi-label">New Profit Margin</div>
             <div className="kpi-sub" style={{ color: newProfitPct >= clinicMarginPct ? '#05DD4D' : '#FF5B5B', fontWeight: 600 }}>
