@@ -125,22 +125,24 @@
 
     /* Card accent variants using official palette */
     .tool-card.calc-card {
-      border-color: rgba(25,165,145,0.35);
-      background: rgba(0,56,64,0.55);
+      border-color: rgba(25,165,145,0.7);
+      background: rgba(0,40,48,0.7);
+      box-shadow: 0 0 0 1px rgba(25,165,145,0.15) inset;
     }
     .tool-card.calc-card::before {
-      background: radial-gradient(circle at 85% 15%, rgba(25,165,145,0.1), transparent 60%);
+      background: radial-gradient(circle at 85% 15%, rgba(25,165,145,0.18), transparent 60%);
     }
-    .tool-card.calc-card:hover { border-color: rgba(25,165,145,0.65); }
+    .tool-card.calc-card:hover { border-color: #19A591; box-shadow: 0 16px 48px rgba(25,165,145,0.2); }
 
     .tool-card.app-card {
-      border-color: rgba(28,207,147,0.3);
-      background: rgba(0,48,56,0.55);
+      border-color: rgba(28,207,147,0.6);
+      background: rgba(0,36,44,0.7);
+      box-shadow: 0 0 0 1px rgba(28,207,147,0.1) inset;
     }
     .tool-card.app-card::before {
-      background: radial-gradient(circle at 85% 15%, rgba(28,207,147,0.08), transparent 60%);
+      background: radial-gradient(circle at 85% 15%, rgba(28,207,147,0.14), transparent 60%);
     }
-    .tool-card.app-card:hover { border-color: rgba(28,207,147,0.6); }
+    .tool-card.app-card:hover { border-color: #1CCF93; box-shadow: 0 16px 48px rgba(28,207,147,0.2); }
 
     .tool-badge {
       display: inline-flex; align-items: center; gap: 5px;
