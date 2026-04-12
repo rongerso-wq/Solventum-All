@@ -119,10 +119,28 @@
     }
     .tool-card:hover {
       transform: translateY(-5px);
-      border-color: rgba(5,221,77,0.38);
       background: rgba(1,66,47,0.8);
-      box-shadow: 0 16px 48px rgba(0,0,0,0.32), 0 0 0 1px rgba(5,221,77,0.12);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.32);
     }
+
+    /* Card accent variants using official palette */
+    .tool-card.calc-card {
+      border-color: rgba(25,165,145,0.35);
+      background: rgba(0,56,64,0.55);
+    }
+    .tool-card.calc-card::before {
+      background: radial-gradient(circle at 85% 15%, rgba(25,165,145,0.1), transparent 60%);
+    }
+    .tool-card.calc-card:hover { border-color: rgba(25,165,145,0.65); }
+
+    .tool-card.app-card {
+      border-color: rgba(28,207,147,0.3);
+      background: rgba(0,48,56,0.55);
+    }
+    .tool-card.app-card::before {
+      background: radial-gradient(circle at 85% 15%, rgba(28,207,147,0.08), transparent 60%);
+    }
+    .tool-card.app-card:hover { border-color: rgba(28,207,147,0.6); }
 
     .tool-badge {
       display: inline-flex; align-items: center; gap: 5px;
@@ -184,7 +202,8 @@
       color: rgba(255,255,255,0.85);
       transition: gap 0.15s;
     }
-    .tool-card .tool-cta { color: #05DD4D; }
+    .tool-card.calc-card .tool-cta { color: #19A591; }
+    .tool-card.app-card  .tool-cta { color: #1CCF93; }
     .tool-card:hover .tool-cta { gap: 11px; }
 
     .tool-note {
@@ -231,10 +250,10 @@
     <div class="cards">
 
       <!-- Health Care Calculator -->
-      <a class="tool-card featured" href="health-care-calculator-solventum.html">
-        <span class="tool-badge">🦷 Calculator</span>
+      <a class="tool-card calc-card" href="health-care-calculator-solventum.html">
+        <span class="tool-badge" style="color:#19A591;background:rgba(25,165,145,0.1);border-color:rgba(25,165,145,0.3);">🦷 Calculator</span>
         <div class="tool-name">Health Care Calculator</div>
-        <div class="tool-tagline">ROI · Bulk Fill · Fluoride · P&amp;L</div>
+        <div class="tool-tagline" style="color:#19A591;">ROI · Bulk Fill · Fluoride · P&amp;L</div>
         <div class="tool-cta">
           Open calculator
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -245,10 +264,10 @@
       </a>
 
       <!-- Solventum App -->
-      <a class="tool-card" href="solventum-app.html">
-        <span class="tool-badge" style="color:#05DD4D;background:rgba(5,221,77,0.1);border-color:rgba(5,221,77,0.3);">🦷 Application</span>
+      <a class="tool-card app-card" href="solventum-app.html">
+        <span class="tool-badge" style="color:#1CCF93;background:rgba(28,207,147,0.1);border-color:rgba(28,207,147,0.3);">🦷 Application</span>
         <div class="tool-name">Solventum App</div>
-        <div class="tool-tagline">Events · Chatbot · Tutorials</div>
+        <div class="tool-tagline" style="color:#1CCF93;">Events · Chatbot · Tutorials</div>
         <div class="tool-cta">
           Open app
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
